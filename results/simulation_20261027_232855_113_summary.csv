@@ -1,0 +1,4 @@
+Algorithm,Scans,Successes,GT_Samples,RMSE_cm,MaxError_cm,FailureRate,MeanCompute_ms
+LS,2,0,0,NaN,NaN,1,0
+LMedS,2,0,0,NaN,NaN,1,0
+MotionLMedS,2,0,0,NaN,NaN,1,0

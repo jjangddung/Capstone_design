@@ -2,13 +2,13 @@
 
 ## 실행
 
-MATLAB R2024b에서 이 폴더를 Current Folder로 선택한 후 실행한다.
+MATLAB R2024b에서 이 폴더를 **Current Folder**로 선택한 후 다음 명령어를 실행한다.
 
 ```matlab
 launchUltra
 ```
 
-`ultrasonic_localization.slx`와 조작 창이 열린다. **X·Y 입력 → Apply X/Y + settings → Run / Restart** 순서로 실행한다. x·y 슬라이더로 값을 바꿔도 Apply를 눌러야 반영된다. 시뮬레이션은 기본 60초이며 종료 후 Run으로 다시 실행할 수 있다.
+`ultrasonic_localization.slx`와 조작 창이 열린다. **X·Y 입력 → Apply X/Y + settings → Run / Restart** 순서로 실행한다. x·y 슬라이더로 값을 바꿔도 **Apply**를 눌러야 반영된다. 시뮬레이션은 기본 60초이며, 종료 후 **Run**으로 다시 실행할 수 있다.
 
 한글 경로도 지원한다. 다른 폴더에서 실행하려면 이 폴더를 `addpath`로 등록한다. `.slx`만 열어 실행하기보다 `launchUltra`를 사용해야 설정과 함수 경로가 준비된다.
 
@@ -22,7 +22,7 @@ launchUltra
 - **Noise + 1 cm quantization:** 표준편차 3 mm 가정 잡음과 1 cm 양자화.
 - **Outlier S2 + wall S4:** S2에 +10 cm 이상값, S4에 가정한 벽 거리 입력.
 
-검은 표식은 결과 기준시각의 GT, 파랑·주황·초록은 각각 LS·LMedS·이동 제약 LMedS이다. 검은 +는 현재 GT이다. 이동 중에는 현재 GT와 추정 기준시각의 GT가 다르다. 오차는 기준시각 GT와 비교한다. 회색 몸체와 작은 원형 타깃은 서로 다른 크기로 표시한다. 점선은 실측 구간의 감지경계이다.
+검은 표식은 결과 기준시각의 GT, 파랑·주황·초록은 각각 LS·LMedS·이동 제약 LMedS이다. 검은 `+`는 현재 GT이다. 이동 중에는 현재 GT와 추정 기준시각의 GT가 다르다. 오차는 기준시각 GT와 비교한다. 회색 몸체와 작은 원형 타깃은 서로 다른 크기로 표시한다. 점선은 실측 구간의 감지경계이다.
 
 ## 반드시 실측으로 바꿀 값
 
@@ -30,12 +30,12 @@ launchUltra
 
 | 설정 | 초기값 | 의미 |
 |---|---|---|
-| radius | 0.005 m | 타깃 반지름. 거리식에서 유지 |
-| bodySize | [0.4 0.4] m | 가상 몸체 크기 |
-| roi | x,y 각각 0.35~0.65 m | 중앙 이동영역 |
-| slot | 0.06 s | 순차 Trigger 시작 간격 |
-| vSim / vMax | 0.08 / 0.15 m/s | 가상 속도 / 이동 제약 최대속도 |
-| background | 중심축과 벽의 교점 거리 | 실제 빈 공간 배경으로 교체 필요 |
+| `radius` | 0.005 m | 타깃 반지름. 거리식에서 유지 |
+| `bodySize` | `[0.4 0.4]` m | 가상 몸체 크기 |
+| `roi` | x, y 각각 0.35~0.65 m | 중앙 이동영역 |
+| `slot` | 0.06 s | 순차 Trigger 시작 간격 |
+| `vSim` / `vMax` | 0.08 / 0.15 m/s | 가상 속도 / 이동 제약 최대속도 |
+| `background` | 중심축과 벽의 교점 거리 | 실제 빈 공간 배경으로 교체 필요 |
 
 몸체 크기와 ROI가 달라지면 서로 충돌하지 않도록 함께 변경해야 한다. 센서 좌표·높이와 타깃 형상도 확인한다. 거리식은 같은 높이의 원형 타깃 표면까지 `norm(p-s)-r`로 근사한다.
 
@@ -101,9 +101,9 @@ launchUltra(cfg)
 
 Arduino가 위 형식으로 순차 측정 결과를 보내도록 펌웨어를 맞춰야 한다. 이 프로젝트는 실제 센서 SKU와 연결 핀이 확정되지 않아 펌웨어·전기 배선을 자동 변경하지 않는다. MATLAB이 센서에 Trigger 명령을 보내는 방식이 아니라 Arduino가 자체 스케줄로 측정한다.
 
-이 모드에서는 GUI의 가상 위치 설정이 비활성화된다. 실제 로봇을 직접 움직이지 않는다. 타깃을 측정한 좌표에 정지시킨 실험에서만 cfg.staticGT 및 staticGTConfirmed를 설정한다. 이동 GT 자동 계측(카메라)은 아직 포함하지 않는다.
+이 모드에서는 GUI의 가상 위치 설정이 비활성화된다. 실제 로봇을 직접 움직이지 않는다. 타깃을 측정한 좌표에 정지시킨 실험에서만 `cfg.staticGT` 및 `staticGTConfirmed`를 설정한다. 이동 GT 자동 계측(카메라)은 아직 포함하지 않는다.
 
-실제 빈 공간 배경 보정 전에는 synthetic 배경값으로 정상 데이터를 제거하지 않도록 `launchUltra`가 배경 필터를 비활성화한다. 보정된 배경을 cfg.background에 m 단위로 넣고 `liveWallCalibrated=true`로 설정하면 켜진다. 공통 ROI 필터는 계속 적용된다. 실측 계수 cfg.alpha/beta와 ROI도 실험 전에 맞춘다.
+실제 빈 공간 배경 보정 전에는 synthetic 배경값으로 정상 데이터를 제거하지 않도록 `launchUltra`가 배경 필터를 비활성화한다. 보정된 배경을 `cfg.background`에 m 단위로 넣고 `liveWallCalibrated=true`로 설정하면 켜진다. 공통 ROI 필터는 계속 적용된다. 실측 계수 `cfg.alpha`/`cfg.beta`와 ROI도 실험 전에 맞춘다.
 
 실시간 수신은 완성된 줄만 처리하며 CSV 일부가 도착했다고 `readline`으로 모델을 멈추지 않는다. Arduino 시각으로 알고리즘을 실행한다. USB 입력 지연·PC 실행 속도는 별도 문제이며 Pacing은 실시간 보장이 아니다. Serial Monitor가 같은 포트를 열고 있으면 닫는다.
 
@@ -116,5 +116,3 @@ run('validateProject.m') % 단위 테스트 + .slx 생성/실행 + 미리보기
 ```
 
 실제 하드웨어 수신·감지율·배경 분포는 센서를 연결한 후 별도 검증해야 한다. 미측정 감지범위를 구현으로 채웠다고 간주하지 않는다.
-#   C a p s t o n e _ d e s i g n  
- 

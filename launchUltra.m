@@ -6,6 +6,19 @@ if ~strcmp(cfg.inputMode,'simulation')&&~cfg.liveWallCalibrated
     % Do not reject real measurements using an unmeasured synthetic background.
     cfg.background(:)=NaN;cfg.backgroundSource='DISABLED - calibrate empty-room data';
 end
+if strcmp(cfg.inputMode,'serial')
+    cfg.inputFormat='experiment24';
+    ultraView('open',[],0,[],cfg);
+    f=findall(groot,'Type','figure','Tag','UltraLocalizationViewer');
+    try
+        session=UltraLiveSession(cfg,f);setappdata(f,'UltraLiveSession',session);
+    catch err
+        h=f.UserData;h.connection.String=['Connection failed: ' err.message];
+        h.run.Enable='off';
+        warning('Ultra:Connect','%s',err.message);
+    end
+    return
+end
 model=buildModel(cfg);
 ultraView('open',[],0,[],cfg);
 open_system(model);

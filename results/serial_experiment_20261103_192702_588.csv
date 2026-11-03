@@ -1,0 +1,14 @@
+# TX HELP
+# Commands:
+# G 100 100 = set Lx Ly
+# A = empty environment, 20 cycles
+# B = robot only, 20 cycles
+# C = robot + cylinder, 20 cycles
+# P1 50 50 = 30 cycles
+# P2 40 50 = 30 cycles
+# P3 60 50 = 30 cycles
+# P4 50 40 = 30 cycles
+# P5 50 60 = 30 cycles
+# H = print CSV header
+# HELP = print commands
+# READY

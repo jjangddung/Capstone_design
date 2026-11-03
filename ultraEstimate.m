@@ -4,19 +4,21 @@ if isempty(track)
     track=struct('p',[NaN NaN],'t',NaN,'fail',0,'pending',[NaN NaN]);
 end
 out=struct('p',nan(3,2),'success',false(3,1),'status',repmat("INSUFFICIENT",3,1),...
-    'range',(raw(:)-cfg.beta)./cfg.alpha,'valid',false(6,1),...
-    'tRef',NaN,'residual',nan(6,3),'inlier',false(6,3),'computeMs',zeros(3,1));
+    'range',(raw(:)-cfg.beta)./cfg.alpha,'valid',false(cfg.sensorCount,1),...
+    'tRef',NaN,'residual',nan(cfg.sensorCount,3),'inlier',false(cfg.sensorCount,3),'computeMs',zeros(3,1));
 d=out.range;
 valid=hwOK(:)&isfinite(d)&isfinite(times(:))&d>=cfg.rangeLimits(1)&d<=cfg.rangeLimits(2);
-for i=1:6
+rangeMargin=cfg.residualLimit;
+if isfield(cfg,'roiRangeExtra'),rangeMargin=rangeMargin+cfg.roiRangeExtra;end
+for i=1:cfg.sensorCount
     if isfinite(cfg.background(i)) && abs(d(i)-cfg.background(i))<=cfg.backgroundTolerance(i)
         valid(i)=false;
     end
     s=cfg.sensorXY(i,:); b=cfg.roi;
     nearest=[min(max(s(1),b(1)),b(2)),min(max(s(2),b(3)),b(4))];
     corners=[b(1) b(3);b(1) b(4);b(2) b(3);b(2) b(4)];
-    lo=norm(nearest-s)-cfg.radius-cfg.residualLimit;
-    hi=max(vecnorm(corners-s,2,2))-cfg.radius+cfg.residualLimit;
+    lo=norm(nearest-s)-cfg.radius-rangeMargin;
+    hi=max(vecnorm(corners-s,2,2))-cfg.radius+rangeMargin;
     valid(i)=valid(i)&&d(i)>=lo&&d(i)<=hi;
 end
 out.valid=valid; ids=find(valid);

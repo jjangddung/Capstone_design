@@ -11,7 +11,9 @@ classdef UltraSystem < matlab.System
         function setupImpl(obj)
             obj.State=ultraInitialize(obj.Config);
             if ~strcmp(obj.Config.inputMode,'simulation')
-                obj.Input=UltraInput(obj.Config);
+                if isfield(obj.Config,'inputFormat')&&strcmp(obj.Config.inputFormat,'experiment24')
+                    obj.Input=UltraExperimentInput(obj.Config);
+                else,obj.Input=UltraInput(obj.Config);end
                 obj.State.p=[NaN NaN];obj.State.coverage(:)=0;
             end
         end
@@ -33,14 +35,15 @@ classdef UltraSystem < matlab.System
         end
         function releaseImpl(obj)
             if ~isempty(obj.Input),delete(obj.Input);obj.Input=[];end
+            externalRecords=obj.State.externalRecords; %#ok<NASGU>
             history=obj.State.history; cfg=obj.Config; commands=obj.State.commands; %#ok<NASGU>
             folder=fullfile(cfg.root,'results'); if ~isfolder(folder),mkdir(folder);end
             tag=char(datetime('now','Format','yyyyMMdd_HHmmss_SSS'));
-            save(fullfile(folder,[cfg.inputMode '_' tag '.mat']),'history','cfg','commands');
+            save(fullfile(folder,[cfg.inputMode '_' tag '.mat']),'history','cfg','commands','externalRecords');
             ultraSummary(history,fullfile(folder,[cfg.inputMode '_' tag '_summary.csv']));
             assignin('base','ultraHistory',history);
         end
-        function sz=getOutputSizeImpl(~),sz=[32 1];end
+        function sz=getOutputSizeImpl(obj),sz=[20+2*obj.Config.sensorCount 1];end
         function dt=getOutputDataTypeImpl(~),dt='double';end
         function b=isOutputComplexImpl(~),b=false;end
         function b=isOutputFixedSizeImpl(~),b=true;end

@@ -1,0 +1,4 @@
+Algorithm,Scans,Successes,GT_Samples,RMSE_cm,MaxError_cm,FailureRate,MeanCompute_ms
+LS,120,61,61,1.60091894763942,6.24842383739989,0.491666666666667,0.4639375
+LMedS,120,0,0,NaN,NaN,1,0.7213125
+MotionLMedS,120,0,0,NaN,NaN,1,0.04804

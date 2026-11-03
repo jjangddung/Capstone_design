@@ -34,7 +34,7 @@ classdef UltraInput < handle
                 obj.Lines=readlines(cfg.replayFile);
                 sessions=[];
                 for j=1:numel(obj.Lines)
-                    m=parseUltraLine(obj.Lines(j));
+                    m=parseUltraLine(obj.Lines(j),cfg.sensorCount);
                     if ~isempty(m),sessions(end+1)=m.session;end %#ok<AGROW>
                 end
                 assert(numel(unique(sessions))<=1,'Replay requires one session per CSV. Split sessions first.');
@@ -61,7 +61,7 @@ classdef UltraInput < handle
                     line=obj.Lines(obj.Index);obj.Index=obj.Index+1;
                     if strlength(strtrim(line))==0,continue;end
                     if obj.LogFID>=0,fprintf(obj.LogFID,'%s\n',line);end
-                    m=parseUltraLine(line);
+                    m=parseUltraLine(line,obj.Config.sensorCount);
                     if isempty(m),obj.RejectedLines=obj.RejectedLines+1;continue;end
                     if m.session~=obj.Session
                         % Session boundaries reset estimator and discard partial scans.
@@ -86,8 +86,8 @@ classdef UltraInput < handle
                     scans{end+1}=obj.closeScan(); %#ok<AGROW>
                 end
                 if isempty(obj.Current)
-                    obj.Current=struct('scan',m.scan,'session',m.session,'raw',nan(6,1),...
-                        'times',nan(6,1),'hw',false(6,1),'seen',false(6,1),'reset',obj.ResetNext);
+                    obj.Current=struct('scan',m.scan,'session',m.session,'raw',nan(obj.Config.sensorCount,1),...
+                        'times',nan(obj.Config.sensorCount,1),'hw',false(obj.Config.sensorCount,1),'seen',false(obj.Config.sensorCount,1),'reset',obj.ResetNext);
                     obj.ResetNext=false;obj.CreatedAt=t;
                 end
                 i=m.sensor;

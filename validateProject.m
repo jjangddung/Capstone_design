@@ -1,14 +1,14 @@
 root=fileparts(mfilename('fullpath'));addpath(root);
 cfg=ultraConfig();cfg.showUI=false;cfg.stopTime=1;
-results=runtests(fullfile(root,'testUltra.m'));disp(results);assertSuccess(results);
+results=[runtests(fullfile(root,'testUltra.m')),runtests(fullfile(root,'testBeam38.m')),runtests(fullfile(root,'testFourWalls.m'))];disp(results);assertSuccess(results);
 model=buildModel(cfg);
 out=sim(model,'StopTime','1');
-assert(numel(out.ultraSignals.Data)==32*numel(out.ultraSignals.Time));
+assert(numel(out.ultraSignals.Data)==(20+2*cfg.sensorCount)*numel(out.ultraSignals.Time));
 history=evalin('base','ultraHistory');
 assert(~isempty(history));assert(all(history(end).result.success));
 assert(max(abs(history(end).result.p-[.5 .5]),[],'all')<1e-6);
 fprintf('SIMULINK_COMPILED_AND_RAN: %d scans\n',numel(history));
-set_param([model '/UserCommand'],'Value','[.5 .5 0 1 2 1]');
+set_param([model '/UserCommand'],'Value','[.5 .5 0 1 3 1]');
 sim(model,'StopTime','1');history=evalin('base','ultraHistory');assert(~any(history(end).result.success));
 fprintf('MEASURED_COVERAGE_MODEL_PASSED\n');
 cfg.inputMode='replay';cfg.replayFile=makeDemoReplay();cfg.staticGT=[.48 .52];cfg.staticGTConfirmed=true;

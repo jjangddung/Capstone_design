@@ -1,6 +1,6 @@
 function [st,y]=ultraTick(st,t,command,cfg)
 % command = [goalX goalY movementMode applyCounter coverageMode noiseMode]
-% coverageMode: 1 assumed detection, 2 measured-only; movementMode: 0 static,1 move.
+% coverageMode: 1 ideal, 2 assumed fixed angle, 3 legacy measured-only.
 command=command(:)';goal=command(1:2); b=cfg.roi;
 inside=goal(1)>=b(1)&&goal(1)<=b(2)&&goal(2)>=b(3)&&goal(2)<=b(4);
 if command(4)~=st.command
@@ -25,6 +25,9 @@ if t+cfg.Ts/100>=st.nextTime
     known=axial>=cfg.beamAxial(1)&&axial<=cfg.beamAxial(end);
     detected=axial>0; st.coverage(i)=1;
     if command(5)==2
+        detected=ultraFixedCoverage(axial,lateral,cfg);
+        if ~detected,st.coverage(i)=2;end
+    elseif command(5)==3
         if ~known
             detected=false; st.coverage(i)=3; % uncalibrated, not physical nondetection
         else
@@ -48,7 +51,7 @@ if t+cfg.Ts/100>=st.nextTime
     end
     st.raw(i)=cfg.alpha(i)*d+cfg.beta(i); st.times(i)=t; st.hw(i)=hw;
     st.nextSensor=i+1; st.nextTime=st.nextTime+cfg.slot;
-    if i==6
+    if i==cfg.sensorCount
         st.scanId=st.scanId+1;
         [st.last,st.track]=ultraEstimate(st.raw,st.times,st.hw,st.track,cfg);
         st.gtRef=[NaN NaN];
